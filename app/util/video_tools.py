@@ -78,7 +78,8 @@ def load_video(video_path, start_time):
     return cap, fps, frame
 
 def select_tab_area(frame):
-    tab_area = cv2.selectROI("Select Tab Area", frame, fromCenter=False, showCrosshair=True)
+    tab_area = (100, 400, 1200, 300)
+    #################################tab_area = cv2.selectROI("Select Tab Area", frame, fromCenter=False, showCrosshair=True)
     cv2.destroyAllWindows()
     return tab_area
 
