@@ -1,0 +1,13 @@
+#videoContainer {
+  position: relative;
+  display: inline-block;
+}
+
+#roiCanvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  cursor: crosshair;
+  display: none;
+  z-index: 10;
+}

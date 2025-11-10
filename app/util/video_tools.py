@@ -68,6 +68,8 @@ def load_video(video_path, start_time):
     fps = cap.get(cv2.CAP_PROP_FPS)
     total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
     start_frame = int(fps * start_time)
+    frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     if start_frame >= total_frames:
         raise ValueError(f"Start time {start_time}s exceeds video length.")
     # Move the video to the desired timestamp
@@ -75,12 +77,29 @@ def load_video(video_path, start_time):
     ret, frame = cap.read()
     if not ret:
         raise IOError("Error: Could not read frame after seeking.")
-    return cap, fps, frame
+    return cap, fps, frame, frame_width, frame_height
 
-def select_tab_area(frame):
-    tab_area = (100, 400, 1200, 300)
-    #################################tab_area = cv2.selectROI("Select Tab Area", frame, fromCenter=False, showCrosshair=True)
-    cv2.destroyAllWindows()
+def select_tab_area(frame, roi=None, frame_width=None, frame_height=None, iframe_size=None):
+    # scale the iframe roi to the actual video frame size
+    if iframe_size is not None and frame_width is not None and frame_height is not None:
+        iframe_width, iframe_height = iframe_size
+        x_scale = frame_width / iframe_width
+        y_scale = frame_height / iframe_height
+        roi = {
+            'x': int(roi.x * x_scale),
+            'y': int(roi.y * y_scale),
+            'width': int(roi.width * x_scale),
+            'height': int(roi.height * y_scale)
+        }
+
+    if roi is not None:
+        # ROI is passed as {x, y, width, height} from frontend
+        tab_area = (roi['x'], roi['y'], roi['width'], roi['height'])
+    else:
+        # Fallback: manual selection (or a default value)
+        tab_area = cv2.selectROI("Select Tab Area", frame, fromCenter=False, showCrosshair=True)
+        cv2.destroyAllWindows()
+    print("selected tab area:", tab_area)
     return tab_area
 
 def get_similarity_threshold(cap, fps, tab_area, start_time = 5):
@@ -91,6 +110,7 @@ def get_similarity_threshold(cap, fps, tab_area, start_time = 5):
         cap.set(cv2.CAP_PROP_POS_FRAMES, start_time) # reset so that this function leaves cap unchanged
     else:
         threshold = float(input("Enter manual similarity threshold (e.g., 15): ") or 15)
+    print(f"Using similarity threshold: {threshold}%")
     return threshold
 
 def capture_tab_frames(cap, fps, tab_area, similarity_threshold, end_time):
@@ -100,7 +120,7 @@ def capture_tab_frames(cap, fps, tab_area, similarity_threshold, end_time):
     change_threshold = 5  # pixel intensity threshold for per-pixel changes
     total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
     end_frame = total_frames - int(end_time * fps)
-
+    print("began processing video")
     while cap.isOpened():
         ret, frame = cap.read()
         if not ret:
