@@ -1,4 +1,4 @@
-from fastapi.responses import RedirectResponse
+from fastapi.responses import FileResponse, RedirectResponse
 from app.util.video_tools import *
 from app.util.pdf_tools import *
 from fastapi import FastAPI
@@ -26,6 +26,10 @@ templates = Jinja2Templates(directory="app/templates")
 
 # Register routes
 app.include_router(tab_routes.router)
+
+@app.get("/favicon.ico")
+async def favicon():
+    return FileResponse("app/static/favicon.ico")
 
 @app.get("/")
 def root(request: Request):

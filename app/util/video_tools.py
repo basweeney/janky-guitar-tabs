@@ -1,3 +1,4 @@
+import os
 import cv2
 import numpy as np
 
@@ -102,18 +103,23 @@ def select_tab_area(frame, roi=None, frame_width=None, frame_height=None, iframe
     print("selected tab area:", tab_area)
     return tab_area
 
-def get_similarity_threshold(cap, fps, tab_area, start_time = 5):
+def get_similarity_threshold(cap, fps, tab_area, start_time = 3):
     auto_detect = input("Auto-detect threshold? (y/n): ").lower().startswith("y")
     if auto_detect:
         cap.set(cv2.CAP_PROP_POS_FRAMES, start_time)
-        threshold = auto_detect_threshold(cap, fps, tab_area, 30) # 30 is the hard coded number of seconds we scan to find the threshold
+        threshold = auto_detect_threshold(cap, fps, tab_area, 10) # 10 is the hard coded number of seconds we scan to find the threshold
         cap.set(cv2.CAP_PROP_POS_FRAMES, start_time) # reset so that this function leaves cap unchanged
     else:
         threshold = float(input("Enter manual similarity threshold (e.g., 15): ") or 15)
     print(f"Using similarity threshold: {threshold}%")
     return threshold
 
+def reset_cap_position(cap, fps, start_time):
+    cap.set(cv2.CAP_PROP_POS_FRAMES, int(fps * start_time))
+    return cap
+
 def capture_tab_frames(cap, fps, tab_area, similarity_threshold, end_time):
+    os.makedirs("tab_screenshots", exist_ok=True)
     image_paths = []
     frame_count = 0
     prev_cropped_gray = None
@@ -134,7 +140,6 @@ def capture_tab_frames(cap, fps, tab_area, similarity_threshold, end_time):
             break
         
         # continue processing
-        x, y, w, h = tab_area
         cropped = safe_crop(frame, tab_area)
         cropped_gray = cv2.cvtColor(cropped, cv2.COLOR_BGR2GRAY)
 

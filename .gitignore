@@ -2,3 +2,4 @@ tab_screenshots
 mediaFolder
 __pycache__/
 guitarTabsvenv
+/app/static/output.pdf

@@ -1,11 +1,12 @@
+import cv2
 from fastapi import APIRouter, HTTPException, Request
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 from fastapi import Body
 from pydantic import BaseModel
 import os
 import subprocess
-from app.util.video_tools import load_video, select_tab_area, capture_tab_frames, auto_detect_threshold
+from app.util.video_tools import load_video, select_tab_area, capture_tab_frames, auto_detect_threshold, reset_cap_position
 from app.util.pdf_tools import create_print_ready_pdf
 from urllib.parse import urlparse, parse_qs
 
@@ -46,7 +47,7 @@ def fetch_video_info(request: VideoRequest):
     thumbnail_url = f"https://img.youtube.com/vi/{video_id}/hqdefault.jpg"
     return {"video_id": video_id, "thumbnail_url": thumbnail_url}
 
-@router.post("/process_video", response_class=HTMLResponse)
+@router.post("/process_video", response_class=JSONResponse)
 def create_tabs(request: TabRequest = Body(...)):
     print("Received request:", request)
     video_url = request.youtube_url
@@ -60,12 +61,13 @@ def create_tabs(request: TabRequest = Body(...)):
 
     # Step 2: Process video
     try:
-        cap, fps, frame, frame_width, frame_height = load_video(video_path, start_time=5)
+        cap, fps, frame, frame_width, frame_height = load_video(video_path, start_time=request.start_buffer)
         roi = request.roi
         iframe_size = (request.iframe_width, request.iframe_height)
         tab_area = select_tab_area(frame, roi, frame_width, frame_height, iframe_size)
         threshold = auto_detect_threshold(cap, fps, tab_area)
-        image_paths = capture_tab_frames(cap, fps, tab_area, threshold, end_time=5)
+        cap = reset_cap_position(cap, fps, request.start_buffer)
+        image_paths = capture_tab_frames(cap, fps, tab_area, threshold, end_time=request.end_buffer)
         create_print_ready_pdf(image_paths, title_text="Guitar Tabs", output_path=os.path.join("app", "static", "output.pdf"))
         cap.release()
     except Exception as e:
