@@ -5,38 +5,54 @@
   <link rel="stylesheet" href="/static/style.css" />
   <link rel="icon" href="/static/favicon.ico" />
 </head>
-<body>
-  <h1>🎸 Guitar Tab Generator</h1>
-    <a href="https://www.flaticon.com/free-icons/music-and-multimedia" title="music and multimedia icons">Music and multimedia icons created by Darius Dan - Flaticon</a>
-  <form id="urlForm">
-    <label for="url">YouTube URL:</label><br>
-    <input type="text" id="url" name="url" placeholder="Enter YouTube URL" required><br><br>
-    <button type="submit">Load Video</button>
-  </form>
 
-  <div id="videoContainer">
-  <iframe id="videoEmbed" width="560" height="315"></iframe>
-  <canvas id="roiCanvas"></canvas>
-  </div>
+<body id="index_body">
+    <div id="page_wrapper">
+        <h1>🎸 Guitar Tab Generator</h1>
+            
+        <form id="urlForm">
+            <label for="url">YouTube URL:</label><br>
+            <input type="text" id="url" name="url" placeholder="Enter YouTube URL" required><br><br>
+            <button type="submit">Load Video</button>
+        </form>
 
-  <button id="selectRoiBtn">Select Tab Area</button>
+        <div id="videoContainer">
+        <iframe id="videoEmbed" width="560" height="315"></iframe>
+        <canvas id="roiCanvas"></canvas>
+        <div id="placeholder">
+        <img src="/static/cloud_image.png" alt="Upload Icon" style="width:50px; margin-bottom: 10px;">
+        <p>Please enter a YouTube URL above</p>
+        </div>
+        </div>
 
-  <form id="roiForm">
-    <label>
-      Start Buffer (seconds):
-      <input type="number" id="start_buffer" value="3">
-    </label>
-    <label>
-      End Buffer (seconds):
-      <input type="number" id="end_buffer" value="3">
-    </label>
-    <button id="generateTabsBtn" type="submit">Generate Tabs</button>
-  </form>
+        <button id="selectRoiBtn">Select Tab Area</button>
 
-  <div id="result"></div>
+        <form id="roiForm">
+            <label>
+            Start Buffer (seconds):
+            <input type="number" id="start_buffer" value="3">
+            </label>
+            <label>
+            End Buffer (seconds):
+            <input type="number" id="end_buffer" value="3">
+            </label>
+            <button id="generateTabsBtn" type="submit">Generate Tabs</button>
+        </form>
 
-<script src="/static/script.js"></script>
+        <div id="result"></div>
+
+        <script src="/static/script.js"></script>
+</div>
+<div class="attribution_container">
+  <a  href="https://www.flaticon.com/free-icons/music-and-multimedia" 
+    title="music and multimedia icons">Music and multimedia icons created by Darius Dan - Flaticon</a>
+  <a href="https://www.flaticon.com/free-icons/cloud-upload" 
+title="cloud upload icons">Cloud upload icons created by Secret Studio - Flaticon</a>
+</div>
 
 
 </body>
+
+
+
 </html>
