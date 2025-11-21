@@ -110,6 +110,8 @@ document.getElementById("selectRoiBtn").addEventListener("click", () => {
     iframe.style.pointerEvents = "auto";
   });
 
+  // Show loading spinner
+const spinner = document.getElementById("loadingSpinner");
 const roiForm = document.getElementById("roiForm");
 roiForm.addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -126,14 +128,14 @@ roiForm.addEventListener("submit", async (e) => {
     iframe_width: iframe.clientWidth,
     iframe_height: iframe.clientHeight
   };
-
+    spinner.classList.remove("hidden"); // SHOW SPINNER
   try {
     const response = await fetch("/tabs/process_video", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data)
     });
-
+    spinner.classList.add("hidden"); // HIDE SPINNER
     const resultDiv = document.getElementById("result");
 
     if (response.ok) {

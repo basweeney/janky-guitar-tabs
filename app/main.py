@@ -10,6 +10,13 @@ from fastapi import APIRouter, HTTPException, Request
 
 app = FastAPI(title="Guitar Tabs Generator")
 
+# TODO
+# This will be a big todo list for the app
+# add user titling and automatic titling based on youtube title to output pdf
+# use AWS to set up user accounts and store their generated tabs
+# allow users to download their generated pdfs from their account page
+# add header, about, instuctions pages to improve site usability and look
+
 # Allow frontend access (adjust domains later if needed)
 app.add_middleware(
     CORSMiddleware,

@@ -1,6 +1,7 @@
 import os
 import cv2
 import numpy as np
+from skimage.metrics import structural_similarity as ssim
 
 def safe_crop(frame, roi, pad=5):
     """Safely crop region with small padding and clamped bounds."""

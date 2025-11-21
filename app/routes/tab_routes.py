@@ -51,6 +51,8 @@ def fetch_video_info(request: VideoRequest):
 def create_tabs(request: TabRequest = Body(...)):
     print("Received request:", request)
     video_url = request.youtube_url
+    if os.path.exists(os.path.join("app", "static", "video.mp4")): # deleting existing video so it can be rewritten
+        os.remove(os.path.join("app", "static", "video.mp4"))
     video_path = os.path.join("app", "static", "video.mp4")
 
     # Step 1: Download video using yt-dlp
